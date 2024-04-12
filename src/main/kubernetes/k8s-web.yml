@@ -1,0 +1,50 @@
+# web-deployment.yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: participant-c-web
+  namespace: default
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: participant-c-web
+  template:
+    metadata:
+      labels:
+        app: participant-c-web
+    spec:
+      containers:
+      - name: participant-c-web
+        image: noah/participant-c
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 9097
+          name: par-c-web-port
+        env:
+          - name: POSTGRES_DB
+            value: db_c
+          - name: POSTGRES_USER
+            value: username_c
+          - name: POSTGRES_PASSWORD
+            value: password_c
+        #resources:
+        #  limits:
+        #    memory: 250M
+        #    cpu: 500m
+---
+# web-service.yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: participant-c-web-service
+  namespace: default
+spec:
+  type: NodePort
+  selector:
+    app: participant-c-web
+  ports:
+  - name: par-c-web-port
+    port: 9983 # porta esterna del servizio in Docker
+    targetPort: 9097 # porta interna del servizio in Docker
+    nodePort: 30983 # porta esterna del cluster in Kubernetes (l'unica esposta su localhost)

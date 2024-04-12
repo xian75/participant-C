@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-compile quarkus:dev</actionName>
+        <displayName>compile quarkus:dev</displayName>
+        <goals>
+            <goal>compile</goal>
+            <goal>quarkus:dev</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-compile quarkus:dev -Ddebug=6006</actionName>
+        <displayName>compile quarkus:dev -Ddebug=6006</displayName>
+        <goals>
+            <goal>compile</goal>
+            <goal>quarkus:dev</goal>
+            <goal>-Ddebug=6006</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-package -Dquarkus.profile=stage -Dquarkus.package.type=uber-jar</actionName>
+        <displayName>package -Dquarkus.profile=stage -Dquarkus.package.type=uber-jar</displayName>
+        <goals>
+            <goal>package -Dquarkus.profile=stage -Dquarkus.package.type=uber-jar &amp;&amp; java -jar target/participant-c-1.0.0-runner.jar</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Start-Cloud</actionName>
+        <displayName>Start Cloud - Participant C</displayName>
+        <goals>
+            <goal>clean package -DskipTests -Dquarkus.profile=cloud</goal>
+            <goal>&amp;&amp; (docker image rm noah/participant-c || echo 'No noah/participant-c image to remove')</goal>
+            <goal>&amp;&amp; docker build -f src/main/Docker/Dockerfile.jvm -t noah/participant-c .</goal>
+            <goal>&amp;&amp; (kubectl delete -f src/main/kubernetes/k8s-web.yml || echo 'No kubernates pod WEB to remove')</goal>
+            <goal>&amp;&amp; (kubectl delete -f src/main/kubernetes/k8s-db.yml || echo 'No kubernates pod DB to remove')</goal>
+            <goal>&amp;&amp; (kubectl delete configmap participant-c-db-init || echo 'No kubernates configmap participant-c-db-init to remove')</goal>
+            <goal>&amp;&amp; kubectl create configmap participant-c-db-init --from-file=src/main/sql/participant-c.sql</goal>
+            <goal>&amp;&amp; kubectl apply -f src/main/kubernetes/k8s-db.yml</goal>
+            <goal>&amp;&amp; (kubectl wait --for=condition=ready pod -l app=participant-c-db --timeout=30s || echo 'go to next step...')</goal>
+            <goal>&amp;&amp; kubectl apply -f src/main/kubernetes/k8s-web.yml</goal>
+            <goal>&amp;&amp; (kubectl wait --for=condition=ready pod -l app=participant-c-web --timeout=30s || echo 'go to next step...')</goal>
+            <goal>&amp;&amp; kubectl get configmap</goal>
+            <goal>&amp;&amp; kubectl get service</goal>
+            <goal>&amp;&amp; kubectl get deployment</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-Stop-Cloud</actionName>
+        <displayName>Stop Cloud - Participant C</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>&amp;&amp; (kubectl delete -f src/main/kubernetes/k8s-web.yml || echo 'No kubernates pod WEB to remove')</goal>
+            <goal>&amp;&amp; (kubectl delete -f src/main/kubernetes/k8s-db.yml || echo 'No kubernates pod DB to remove')</goal>
+            <goal>&amp;&amp; (kubectl delete configmap participant-c-db-init || echo 'No kubernates configmap participant-c-db-init to remove')</goal>
+            <goal>&amp;&amp; kubectl get configmap</goal>
+            <goal>&amp;&amp; kubectl get service</goal>
+            <goal>&amp;&amp; kubectl get deployment</goal>
+        </goals>
+    </action>
+</actions>
