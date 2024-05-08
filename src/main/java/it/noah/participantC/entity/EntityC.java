@@ -146,7 +146,7 @@ public class EntityC implements IEntity {
         o.setCreatetime(createtime);
         o.setDbtime(dbtime);
         o.setOptlock(optlock);
-        o.setState(getEventStateName());
+        o.setState(eventStateName());
         return o;
     }
 }

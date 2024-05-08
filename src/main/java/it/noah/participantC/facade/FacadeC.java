@@ -47,8 +47,16 @@ public class FacadeC {
         return dao.deleteC(uuid, expire, entityAId);
     }
 
+    public Uni<List<EntityC>> logicallyDeleteC(String uuid, OffsetDateTime expire, Long entityAId) {
+        return dao.logicallyDeleteC(uuid, expire, entityAId);
+    }
+
     public Uni<List<EntityC>> updateC(String uuid, OffsetDateTime expire, Long entityAId, String titlePrefix) {
         return dao.updateC(uuid, expire, entityAId, titlePrefix);
+    }
+
+    public Uni<List<EntityC>> updateArchivingC(String uuid, OffsetDateTime expire, Long entityAId, String titlePrefix) {
+        return dao.updateArchivingC(uuid, expire, entityAId, titlePrefix);
     }
 
     public Uni<List<ObjectC>> getByAId(Long id) {

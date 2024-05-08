@@ -66,14 +66,20 @@ public class ResourceC implements IParticipantServer {
             case "DELETE_ABC":
                 ABCEventDetails details2 = jsoner.getObject(data, ABCEventDetails.class);
                 return facade.deleteC(uuid, expire, details2.getEntityAId()).replaceWith(details2);
-            case "UPDATE_ABC":
+            case "LOGICAL_DELETE_ABC":
                 ABCEventDetails details3 = jsoner.getObject(data, ABCEventDetails.class);
-                return facade.updateC(uuid, expire, details3.getEntityAId(), details3.getTitlePrefix()).replaceWith(details3);
+                return facade.logicallyDeleteC(uuid, expire, details3.getEntityAId()).replaceWith(details3);
+            case "UPDATE_ABC":
+                ABCEventDetails details4 = jsoner.getObject(data, ABCEventDetails.class);
+                return facade.updateC(uuid, expire, details4.getEntityAId(), details4.getTitlePrefix()).replaceWith(details4);
+            case "UPDATE_ARCHIVING_ABC":
+                ABCEventDetails details5 = jsoner.getObject(data, ABCEventDetails.class);
+                return facade.updateArchivingC(uuid, expire, details5.getEntityAId(), details5.getTitlePrefix()).replaceWith(details5);
             case "READ_ONE_ABC":
-                SingleABCEventDetails details4 = jsoner.getObject(data, SingleABCEventDetails.class);
-                return facade.getByAId(details4.getEntityAId()).map(objects -> {
-                    details4.setCItems(objects);
-                    return details4;
+                SingleABCEventDetails details6 = jsoner.getObject(data, SingleABCEventDetails.class);
+                return facade.getByAId(details6.getEntityAId()).map(objects -> {
+                    details6.setCItems(objects);
+                    return details6;
                 });
             default:
                 return throwNoOperationFound(operation);
